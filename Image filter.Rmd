@@ -1,0 +1,79 @@
+---
+title: "Image filter group examn"
+author: "Jonas Wuopio"
+date: "Sys.Date()"
+output: pdf_document
+---
+
+```{r installing packages and load}
+library(renv)
+renv::init()
+
+library(magick)
+```
+
+
+```{r load image and convert to bitmap}
+# Path to the image
+image_path <- "C:/Users/jonwuo/OneDrive - Karolinska Institutet/Dokument/Forskning/Kurser/Inermediate R/Group exam/Testimage.jpg"
+
+image_jpeg <- image_read(image_path)
+
+image_bitmap <- image_jpeg[[1]]
+
+```
+
+
+```{r}
+
+#Greyscale filter that returns a black or white vector depending on the greyscale
+
+greyscale_filter <- function(rgb) {
+  # Extract R, G, B components from the RGB vector
+  R <- rgb[1]
+  G <- rgb[2]
+  B <- rgb[3]
+
+  # Calculate the weighted average for greyscale
+  greyscale_value <- 0.299 * R + 0.587 * G + 0.114 * B
+
+  #Returns white or black depending on the cut-off value 127
+  return(ifelse(greyscale_value > 127, c(255, 255, 255), c(0 ,0 ,0)))
+}
+
+
+# Function to apply the filter to the image
+apply_filter_to_image <- function(image, filter_function) {
+  # Convert the image to an array
+  img_array <- as.array(image)
+
+  # Apply the filter to each pixel
+  for (i in 1:dim(img_array)[1]) {
+    for (j in 1:dim(img_array)[2]) {
+      pixel_rgb <- img_array[i, j, ]
+      new_pixel_rgb <- filter_function(pixel_rgb)
+      img_array[i, j, ] <- new_pixel_rgb
+    }
+  }
+
+  # Create a new image from the modified array
+  modified_image <- image_convert(array_to_image(img_array))
+
+  return(modified_image)
+}
+
+
+# Load the image (replace with your actual file path)
+image_path <- "C:/Users/jonwuo/OneDrive - Karolinska Institutet/Dokument/Forskning/Kurser/Inermediate R/Group exam/Testimage.jpg"
+img <- image_read(image_path)
+img_bitmap <- img[[1]]
+
+
+
+# Apply the cutoff filter
+modified_img <- apply_filter_to_image(image_bitmap, cutoff_filter)
+
+# Display the modified image
+image_browse(modified_img)
+```
+
