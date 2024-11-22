@@ -1,5 +1,5 @@
 ---
-title: "Image filter group 6 examn"
+title: "Image filter group 6 exam"
 author: "Jonas Wuopio"
 date: "Sys.Date()"
 output: pdf_document
@@ -16,7 +16,7 @@ image_path <- "C:/Users/jonwuo/OneDrive - Karolinska Institutet/Dokument/Forskni
 #load image into environment
 image_bitmap <- image_read(image_path)
 
-#Turn jpeg into bitmap to be able to
+#Turn jpeg into bitmap 
 image_bitmap <- image_bitmap[[1]]
 
 ```
@@ -25,6 +25,7 @@ image_bitmap <- image_bitmap[[1]]
 
 greyscale_filter <- function(rgb) {
   
+  #Calculate the greyscale value from the rgb-vector
   greyscale_value <- round(rgb[1] * 0.299 + rgb[2] * 0.587 + rgb[3] * 0.114)
   
   return(as.raw(c(greyscale_value, greyscale_value, greyscale_value)))
@@ -33,28 +34,28 @@ greyscale_filter <- function(rgb) {
 
 ```
 
-```{r "color filter"}
-#Funtion for two color-filter
-#color_1 and color_2 are color vectors of choice
-#red = c(255, 0, 0), green = c(0, 255, 0), blue = c(0, 0, 255)
+```{r "colour filter"}
+#Funtion for two colour-filter
+#colour_1 are colour vectors of choice
+#red = c(255, 0, 0), green = c(0, 255, 0), blue = c(0, 0, 255). Second colour is set to white = c(255, 255, 255)
 
-two_color_filter <- function(rgb, color_1, color_2) {
+two_colour_filter <- function(rgb, colour_1) {
 
   # Extract RGB values from the input vector
   R <- rgb[1]
   G <- rgb[2]
   B <- rgb[3]
   
-  # Convert to grayscale using the luminance formula
+  #Calculate the greyscale value from the rgb-vector
   greyscale_value <- round(R * 0.299 + G * 0.587 + B * 0.114)
   
-  # Apply the cutoff for two-color effect
+  # Apply the cutoff for two-colour effect
     if (greyscale_value > 127) {
-      # Color if greater than cutoff 
-      return(as.raw(color_1))
+      # colour if greater than cutoff 
+      return(as.raw(colour_1))
     }  else {
-        # Color if less than cutoff
-        return(as.raw(color_2))    
+        # colour if less than cutoff
+        return(as.raw(c(255, 255, 255)))    
     }
 } 
 
@@ -94,9 +95,9 @@ apply_greyscale_filter <- function(image) {
 
 ```{r}
 
-#Apply filter function. image is a bitmap image and colors are vectors of choice. 
+#Apply filter function. image is a bitmap image and colours are vectors of choice. 
 
-apply_two_color_filter <- function(image, color_1, color_2) {
+apply_two_colour_filter <- function(image, colour) {
 
   # Copy of the image to store filtered values
   filtered_image <- image
@@ -111,13 +112,13 @@ apply_two_color_filter <- function(image, color_1, color_2) {
         G <- as.numeric(image[2, col, row])
         B <- as.numeric(image[3, col, row])
       
-        # Apply the two color filter function to the RGB-vector
-        two_color_pixel <- two_color_filter(c(R, G, B), color_1, color_2)
+        # Apply the two colour filter function to the RGB-vector
+        two_colour_pixel <- two_colour_filter(c(R, G, B), colour)
       
         # Update the filtered bitmap
-        filtered_image[1, col, row] <- as.raw(two_color_pixel[1])
-        filtered_image[2, col, row] <- as.raw(two_color_pixel[2])
-        filtered_image[3, col, row] <- as.raw(two_color_pixel[3])
+        filtered_image[1, col, row] <- as.raw(two_colour_pixel[1])
+        filtered_image[2, col, row] <- as.raw(two_colour_pixel[2])
+        filtered_image[3, col, row] <- as.raw(two_colour_pixel[3])
     }
   }
   return(filtered_image)
@@ -125,12 +126,30 @@ apply_two_color_filter <- function(image, color_1, color_2) {
 ```
 
 
+
+```{r}
+#Image filter. fun = greyscale for greyscale, colour for colour (colour = colour vector of choice (white is default))
+
+apply_image_filter <- function(image, fun, colour = c(255, 0, 0), ...) {
+  
+  # Apply greyscale filter
+  if (fun == "greyscale") {
+    return(apply_greyscale_filter(image))
+  }
+  
+  # Apply two-colour filter
+  else (fun == "colour") 
+    
+    return(apply_two_colour_filter(image, colour, ...))
+  } 
+
+
+  
+```
+
 ```{r "control the function"}
 
-image_read(apply_greyscale_filter(image_bitmap))
-
-#control with red and green
-image_read(apply_two_color_filter(image_bitmap, c(255, 0, 0), c(0, 255, 0)))
+image_read(apply_image_filter(image_bitmap, fun = "colour", c(0, 0, 0)))
 
 ```
 
