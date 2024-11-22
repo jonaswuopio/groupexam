@@ -33,6 +33,34 @@ greyscale_filter <- function(rgb) {
 
 ```
 
+```{r "color filter"}
+#Funtion for two color-filter
+#color_1 and color_2 are color vectors of choice
+#red = c(255, 0, 0), green = c(0, 255, 0), blue = c(0, 0, 255)
+
+two_color_filter <- function(rgb, color_1, color_2) {
+
+  # Extract RGB values from the input vector
+  R <- rgb[1]
+  G <- rgb[2]
+  B <- rgb[3]
+  
+  # Convert to grayscale using the luminance formula
+  greyscale_value <- round(R * 0.299 + G * 0.587 + B * 0.114)
+  
+  # Apply the cutoff for two-color effect
+    if (greyscale_value > 127) {
+      # Color if greater than cutoff 
+      return(as.raw(color_1))
+    }  else {
+        # Color if less than cutoff
+        return(as.raw(color_2))    
+    }
+} 
+
+```
+
+
 ```{r "applying the filter to the image"}
 
 apply_greyscale_filter <- function(image) {
@@ -64,10 +92,45 @@ apply_greyscale_filter <- function(image) {
   
 ```
 
+```{r}
+
+#Apply filter function. image is a bitmap image and colors are vectors of choice. 
+
+apply_two_color_filter <- function(image, color_1, color_2) {
+
+  # Copy of the image to store filtered values
+  filtered_image <- image
+  
+  # Loop through each pixel in the image
+  for (row in 1:dim(image)[3]) {
+    
+      for (col in 1:dim(image)[2]) {
+      
+        # Extract RGB values for the current pixel
+        R <- as.numeric(image[1, col, row])
+        G <- as.numeric(image[2, col, row])
+        B <- as.numeric(image[3, col, row])
+      
+        # Apply the two color filter function to the RGB-vector
+        two_color_pixel <- two_color_filter(c(R, G, B), color_1, color_2)
+      
+        # Update the filtered bitmap
+        filtered_image[1, col, row] <- as.raw(two_color_pixel[1])
+        filtered_image[2, col, row] <- as.raw(two_color_pixel[2])
+        filtered_image[3, col, row] <- as.raw(two_color_pixel[3])
+    }
+  }
+  return(filtered_image)
+}
+```
+
+
 ```{r "control the function"}
 
 image_read(apply_greyscale_filter(image_bitmap))
 
+#control with red and green
+image_read(apply_two_color_filter(image_bitmap, c(255, 0, 0), c(0, 255, 0)))
 
 ```
 
