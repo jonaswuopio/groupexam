@@ -45,7 +45,7 @@ two_colour_filter <- function(rgb, colour) {
 #'
 #' This function takes the greyscale function and applies it to every pixel in the image.
 #' @param image The bitmap image.
-#' @return A filtered image.
+#' @return The filtered image.
 #' @export
 apply_greyscale_filter <- function(image) {
   
@@ -78,7 +78,8 @@ apply_greyscale_filter <- function(image) {
 #'
 #' This function takes the two colour filter and applies it to every pixel in the image.
 #' @param image The bitmap image
-#' @return Filtered image
+#' @param colour The colour for the filter given as a vector, for example black c(0, 0, 0)
+#' @return The filtered image
 #' @export
 apply_two_colour_filter <- function(image, colour) {
   
@@ -113,7 +114,7 @@ apply_two_colour_filter <- function(image, colour) {
 #' @param image The image to be filtered.
 #' @param fun The filter of choice, greyscale or colour.
 #' @param colour Filter colour of choice as a vector. Default is red c(255, 0, 0)
-#' @return The image
+#' @return The filtered image
 #' @export
 apply_image_filter <- function(image, fun, colour = c(255, 0, 0), ...) {
   
